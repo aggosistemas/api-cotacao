@@ -1,0 +1,21 @@
+{
+  "name": "api-cotacao",
+  "version": "1.0.0",
+  "description": "API para consulta de cotação de moedas usando o Banco Central (OLINDA)",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "express": "^5.1.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "supertest": "^6.3.3"
+  }
+}
