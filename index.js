@@ -10,12 +10,16 @@ app.use(express.json());
 
 // Swagger configurado dinamicamente com CORS
 app.use('/api-docs', swaggerUi.serve, (req, res) => {
+  const host = process.env.KUBERNETES_SERVICE_HOST 
+    ? `http://${process.env.EXTERNAL_IP || '34.170.169.239'}` // Use seu IP externo ou variável de ambiente
+    : `${req.protocol}://${req.get('host')}`;
+
   const swaggerWithHost = {
     ...swaggerSpec,
     servers: [
       {
-        url: `${req.protocol}://${req.get('host')}`,
-        description: 'Dynamic server URL'
+        url: host,
+        description: process.env.KUBERNETES_SERVICE_HOST ? 'Production Kubernetes' : 'Local development'
       }
     ]
   };
