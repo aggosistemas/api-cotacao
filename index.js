@@ -9,12 +9,19 @@ app.use(cors());
 app.use(express.json());
 
 // Swagger configurado dinamicamente com CORS
-app.use('/api-docs', cors(), (req, res, next) => {
-  swaggerSpec.servers = [
-    { url: `${req.protocol}://${req.get('host')}` }
-  ];
-  swaggerUi.setup(swaggerSpec)(req, res, next);
+app.use('/api-docs', swaggerUi.serve, (req, res) => {
+  const swaggerWithHost = {
+    ...swaggerSpec,
+    servers: [
+      {
+        url: `${req.protocol}://${req.get('host')}`,
+        description: 'Dynamic server URL'
+      }
+    ]
+  };
+  swaggerUi.setup(swaggerWithHost)(req, res);
 });
+
 
 // Rotas da API
 app.use('/cotacao', cotacaoRouter);
