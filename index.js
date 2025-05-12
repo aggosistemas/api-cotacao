@@ -1,19 +1,23 @@
 const express = require('express');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
-const cotacaoRouter = require('./routes/cotacao');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/cotacao', cotacaoRouter);
-app.get('/', (req, res) => res.send('API de Cotação está no ar!'));
 
-if (require.main === module) {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
-  });
-}
+// Swagger: configura dinamicamente o host da requisição
+app.use('/api-docs', (req, res, next) => {
+  swaggerSpec.servers = [
+    {
+      url: `${req.protocol}://${req.get('host')}`,
+      description: 'URL dinâmica detectada pelo host da requisição'
+    }
+  ];
+  swaggerUi.setup(swaggerSpec)(req, res, next);
+});
 
-module.exports = app;
+app.use('/cotacao', require('./routes/cotacao'));
+
+app.listen(3000, () => console.log('Servidor rodando na porta 3000'));

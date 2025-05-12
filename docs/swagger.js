@@ -1,22 +1,16 @@
-const swaggerJSDoc = require('swagger-jsdoc');
-
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API de Cotação de Moedas - Banco Central',
-      version: '1.0.0',
-      description: 'Consulta cotações de moedas usando a API do Banco Central (OLINDA)',
-    },
-    servers: [
-      {
-        url: 'http://192.168.49.2:30081',
-      },
-    ],
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'API Cotação',
+    version: '1.0.0',
+    description: 'Consulta de cotação de moedas',
   },
-  apis: ['./routes/*.js'],
+  servers: [], // será definido dinamicamente em runtime
 };
 
-const swaggerSpec = swaggerJSDoc(options);
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*.js'], // ou onde estão suas anotações
+};
 
-module.exports = swaggerSpec;
+module.exports = require('swagger-jsdoc')(options);
