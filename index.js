@@ -8,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Swagger configurado dinamicamente com CORS
 app.use('/api-docs', cors(), (req, res, next) => {
   swaggerSpec.servers = [
     { url: `${req.protocol}://${req.get('host')}` }
@@ -15,8 +16,8 @@ app.use('/api-docs', cors(), (req, res, next) => {
   swaggerUi.setup(swaggerSpec)(req, res, next);
 });
 
-
+// Rotas da API
 app.use('/cotacao', cotacaoRouter);
 app.get('/', (req, res) => res.send('API de Cotação no ar!'));
 
-module.exports = app; // Exporta somente o app, sem escutar a porta
+module.exports = app;
