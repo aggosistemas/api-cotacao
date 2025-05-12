@@ -8,12 +8,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', (req, res, next) => {
+app.use('/api-docs', cors(), (req, res, next) => {
   swaggerSpec.servers = [
     { url: `${req.protocol}://${req.get('host')}` }
   ];
   swaggerUi.setup(swaggerSpec)(req, res, next);
 });
+
 
 app.use('/cotacao', cotacaoRouter);
 app.get('/', (req, res) => res.send('API de Cotação no ar!'));
