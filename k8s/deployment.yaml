@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api-cotacao
-          image: api-cotacao:1.0
+          image: docker.io/aggosistemas/api-cotacao:latest
           ports:
             - containerPort: 3000
 ---
@@ -23,10 +23,9 @@ kind: Service
 metadata:
   name: api-cotacao-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: api-cotacao
   ports:
-    - port: 3000
-      targetPort: 3000
-      nodePort: 30081
+    - port: 80         # Porta pública acessível
+      targetPort: 3000 # Porta do container Node.js
