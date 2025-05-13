@@ -1,0 +1,43 @@
+name: Remover API Cotação (Docker Hub + GKE) 
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch para sincronização do YAML"
+        required: true
+        default: "main"
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: api-cotacao
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Autenticar na GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar acesso ao cluster GKE
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: cluster-estudo
+          location: us-central1
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Remover aplicação do cluster GKE
+        run: kubectl delete -f k8s/deployment.yaml || true
+
+      - name: Deletar imagem do Docker Hub
+        run: |
+          curl -X DELETE \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}" \
+            "https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}/tags/latest/"
