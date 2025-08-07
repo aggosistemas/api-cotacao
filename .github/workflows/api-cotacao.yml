@@ -77,3 +77,19 @@ jobs:
 
       - name: Aplicar deployment no GKE
         run: kubectl apply -f k8s/deployment.yaml
+      # Enviar log para o Fluent Bit -> InfluxDB
+      - name: Send log to InfluxDB via Fluent Bit
+        if: always() # Garante execução mesmo se o job falhar
+        run: |
+          curl --location '${{ secrets.FLUENT_BIT_URL }}' \
+          --header 'Content-Type: application/json' \
+          --header 'Authorization: Basic ${{ secrets.FLUENT_BIT_AUTH_BA }}' \
+          --data "{
+            \"service\": \"github-actions\",
+            \"workflow\": \"lambda-provisioning\",
+            \"job\": \"terraform-${{ inputs.action }}\",
+            \"status\": \"${{ job.status }}\",
+            \"branch\": \"${GITHUB_REF_NAME}\",
+            \"autor\": \"${GITHUB_ACTOR}\",
+            \"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
+          }"
